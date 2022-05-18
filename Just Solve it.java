@@ -1,47 +1,50 @@
 import java.io.*;
-import java.util.StringTokenizer;
+import java.util.*;
 
-public class BatchSort {
-    static boolean check(int x,int y,int[][] arr,int n,int m){
-        for(int i=1;i<=n;i++){
-            int t = 0,f=0;
-            for(int j=1;j<=m;j++){
-                t=arr[i][j];
-                if(j==x){
-                    t=arr[i][y];
-                }
-                if(j==y){
-                    t=arr[i][x];
-                }
-                if(t!=j){
-                    f++;
-                }
-            }
-            if(f!=0 && f!=2){
-                return false;
+public class JustSolveIt {
+    static Pair lpsgcf(int x){
+        int[] GCF=new int[x+1];
+        int[] div=new int[x+1];
+        int[] sumDiv=new int[x+1];
+        for (int i=1;i<=x;i++){
+            GCF[i]=i;
+            div[i]=1;
+            sumDiv[i]=1;
+        }
+        for(int i=2;i<=x;i++){
+            for(int j=i;j<=x;j+=i){
+                    GCF[j] = Math.min(GCF[j], i);
+                    ++div[j];
+                    sumDiv[j]+=i;
             }
         }
-        return true;
+        Vector<Integer>vec=new Vector<>();
+        Set<Integer> set=new HashSet<>();
+        int n=x;
+        while (n>1){
+            vec.add(GCF[n]);
+            set.add(GCF[n]);
+            n/=GCF[n];
+        }
+        Collections.sort(vec);
+        Pair ans=new Pair(0,0,0,0,0,0);
+        ans.lcf=vec.get(0);
+        ans.gcf=vec.get(vec.size()-1);
+        ans.dis=set.size();
+        ans.tdiv= vec.size();
+        ans.divcnt=div[x];
+        ans.dixSum=sumDiv[x];
+         return ans;
     }
     public static void main(String[] args) {
         MyScanner sc=new MyScanner();
         out=new PrintWriter(new BufferedOutputStream(System.out));
-        int n=sc.nextInt(),m=sc.nextInt();
-        int[][] arr=new int[n+1][m+1];
-        for(int i=1;i<=n;i++){
-            for(int j=1;j<=m;j++){
-                arr[i][j]=sc.nextInt();
-            }
+        int n=sc.nextInt();
+        while (n-->0){
+            int x=sc.nextInt();
+            Pair ans=lpsgcf(x);
+            out.println(ans.lcf+" "+ans.gcf+" "+ans.dis+" "+ans.tdiv+" "+ans.divcnt+" "+ans.dixSum);
         }
-        for(int i=1;i<=m;i++){
-            for(int j=1;j<=m;j++){
-                if(check(i,j,arr,n,m)){
-                    out.println("YES");
-                    out.close();
-                }
-            }
-        }
-        out.println("NO");
         out.flush();
         out.close();
     }
@@ -64,6 +67,17 @@ public class BatchSort {
         }
         int nextInt(){
             return Integer.parseInt(next());
+        }
+    }
+    static class Pair{
+        int lcf,gcf,dis,tdiv,divcnt,dixSum;
+        public Pair(int _l ,int _g,int _dis,int _tdix,int _divcnt,int _dixSum) {
+            this.lcf=_l;
+            this.gcf=_g;
+            this.dis=_dis;
+            this.tdiv=_tdix;
+            this.divcnt=_divcnt;
+            this.dixSum=_dixSum;
         }
     }
 }
